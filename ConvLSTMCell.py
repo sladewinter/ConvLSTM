@@ -32,7 +32,7 @@ class ConvLSTMCell(nn.Module):
         # Do all convolutions at once for efficiency
         conv_output = self.conv(torch.cat([X, H_prev], dim=1))
 
-        # Split along channels
+        # Split
         i_conv, f_conv, C_conv, o_conv = torch.chunk(conv_output, chunks=4, dim=1)
 
         input_gate = torch.sigmoid(i_conv + self.W_ci( C_prev ))
