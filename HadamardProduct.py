@@ -8,5 +8,5 @@ class HadamardProduct(nn.Module):
         super(HadamardProduct, self).__init__()
         self.weight = nn.Parameter(torch.Tensor(*shape))
 
-    def forward(self, X):
-        return X * self.weight
+    def forward(self, C):
+        return self.weight * C
