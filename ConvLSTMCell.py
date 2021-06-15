@@ -8,9 +8,7 @@ class ConvLSTMCell(nn.Module):
     def __init__(self, in_channels, out_channels, 
     kernel_size, padding, activation, frame_size):
 
-        super(ConvLSTMCell, self).__init__()
-
-        self.out_channels = out_channels      
+        super(ConvLSTMCell, self).__init__()  
 
         if activation == "tanh":
             self.activation = torch.tanh 
@@ -31,15 +29,11 @@ class ConvLSTMCell(nn.Module):
 
     def forward(self, X, H_prev, C_prev):
 
-        # Concatenate along channels
-        conv_input = torch.cat([X, H_prev], dim=1)
-
         # Do all convolutions at once for efficiency
-        conv_output = self.conv(conv_input)
+        conv_output = self.conv(torch.cat([X, H_prev], dim=1))
 
         # Split along channels
-        i_conv, f_conv, C_conv, o_conv = torch.split(
-            conv_output, self.out_channels, dim=1)
+        i_conv, f_conv, C_conv, o_conv = torch.chunk(conv_output, chunks=4, dim=1)
 
         input_gate = torch.sigmoid(i_conv + self.W_ci( C_prev ))
         forget_gate = torch.sigmoid(f_conv + self.W_cf( C_prev ))
