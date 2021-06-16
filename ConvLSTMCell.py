@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from HadamardProduct import HadamardProduct
 
-# Doesn't include the feedback loop on the cells output
+# Original ConvLSTM cell as proposed by Shi et al.
 class ConvLSTMCell(nn.Module):
 
     def __init__(self, in_channels, out_channels, 
@@ -15,7 +15,7 @@ class ConvLSTMCell(nn.Module):
         elif activation == "relu":
             self.activation = torch.relu
         
-        # Single convolutional layer for all convolutions
+        # Idea adapted from https://github.com/ndrplz/ConvLSTM_pytorch
         self.conv = nn.Conv2d(
             in_channels=in_channels + out_channels, 
             out_channels=4 * out_channels, 
@@ -29,10 +29,10 @@ class ConvLSTMCell(nn.Module):
 
     def forward(self, X, H_prev, C_prev):
 
-        # Do all convolutions at once for efficiency
+        # Idea adapted from https://github.com/ndrplz/ConvLSTM_pytorch
         conv_output = self.conv(torch.cat([X, H_prev], dim=1))
 
-        # Split
+        # Idea adapted from https://github.com/ndrplz/ConvLSTM_pytorch
         i_conv, f_conv, C_conv, o_conv = torch.chunk(conv_output, chunks=4, dim=1)
 
         input_gate = torch.sigmoid(i_conv + self.W_ci( C_prev ))
